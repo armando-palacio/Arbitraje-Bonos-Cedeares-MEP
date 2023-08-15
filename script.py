@@ -96,11 +96,12 @@ bonos_MEP = bonos[bonos['Símbolo'].str.endswith('D')]
 bonos_ARS = bonos_ARS[(bonos_ARS['Símbolo']+'D').isin(bonos_MEP['Símbolo'])].sort_values(by='Símbolo')
 bonos_MEP = bonos_MEP[bonos_MEP['Símbolo'].isin(bonos_ARS['Símbolo']+'D')].sort_values(by='Símbolo')
 
-cols = ['MEP', 'Vol. ARS', 'Vol. USD']
-bonos = pd.DataFrame(index=bonos_ARS['Símbolo'], columns=cols)
-bonos[cols[0]] = (bonos_ARS['ÚltimoOperado'].values/bonos_MEP['ÚltimoOperado'].values).round(2)
-bonos[cols[1]] = clasify_numbers(bonos_ARS['MontoOperado'].values)
-bonos[cols[2]] = clasify_numbers(bonos_MEP['MontoOperado'].values)
+cols = ['Símbolo', 'USD_MEP', 'Volumen[ARS]', 'Volumen[USD]']
+bonos = pd.DataFrame(columns=cols)
+bonos['Símbolo'] = bonos_ARS['Símbolo'].values
+bonos['USD_MEP'] = (bonos_ARS['ÚltimoOperado'].values/bonos_MEP['ÚltimoOperado'].values).round(2)
+bonos['Volumen[ARS]'] = clasify_numbers(bonos_ARS['MontoOperado'].values)
+bonos['Volumen[USD]'] = clasify_numbers(bonos_MEP['MontoOperado'].values)
 bonos = bonos.sort_values(by='MEP')
 
 
@@ -134,15 +135,12 @@ cedears['USD_MEP'] = (cedears_ARS['ÚltimoOperado'].values/cedears_MEP['ÚltimoO
 modificar = list(filter(lambda clave: filt[clave] != 0, filt.keys()))
 new_ARS = list(filter(lambda valor: valor != 0, filt.values()))
 cedears['Símbolo'] = cedears['Símbolo'].replace(modificar, new_ARS)
-# cedears = cedears.set_index('Símbolo').sort_index()
 
 ratio = pd.read_json('C:/Users/Teleco/OneDrive/Proyectos/Arbitraje-Bonos-Cedeares-MEP/ratios.json', orient='index').sort_index(); ratio.columns = ['ratio']
 cedears['Cedear[USD]'] = (ratio['ratio'].values * cedears['Precio[USD]'].values).round(2)
-# cedears['Acción[USD]'] = get_stock_price(cedears.index.values).round(2) # Obtiene los valores de las
 cedears['Acción[USD]'] = get_stock_price(cedears['Símbolo'].values).round(2) # Obtiene los valores de las
 cedears['ratio[Ced/Acc-1]%'] = (100 * (cedears['Cedear[USD]'].values/cedears['Acción[USD]'].values - 1)).round(1)
 cedears['Compañía'] = cedears_ARS['name'].values
-# cedears['Símbolo'] = cedears.index.values
 cedears = cedears.sort_values(by='USD_MEP')
 
 
