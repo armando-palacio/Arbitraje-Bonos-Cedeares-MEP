@@ -102,7 +102,7 @@ bonos['Símbolo'] = bonos_ARS['Símbolo'].values
 bonos['USD_MEP'] = (bonos_ARS['ÚltimoOperado'].values/bonos_MEP['ÚltimoOperado'].values).round(2)
 bonos['Volumen[ARS]'] = clasify_numbers(bonos_ARS['MontoOperado'].values)
 bonos['Volumen[USD]'] = clasify_numbers(bonos_MEP['MontoOperado'].values)
-bonos = bonos.sort_values(by='MEP')
+bonos = bonos.sort_values(by='USD_MEP')
 
 
 cedears = get_table('https://iol.invertironline.com/mercado/cotizaciones/argentina/cedears/todos')
@@ -121,7 +121,7 @@ cedears_ARS = cedears_ARS[cedears_ARS['name'].isin(cedears_MEP['name'])]
 cedears_ARS = cedears_ARS.sort_values(by='Símbolo')
 cedears_MEP = cedears_MEP.sort_values(by='Símbolo', key=lambda x: x.map({v: i for i, v in enumerate((cedears_ARS['Símbolo']+'D').values)}))
 
-cols = ['Símbolo', 'Precio[ARS]', 'Volumen[ARS]', 'Precio[USD]', 'Volumen[USD]', 'USD_MEP', 'Cedear[USD]', 'Acción[USD]','ratio[Ced/Acc-1]%','Compañía']
+cols = ['Símbolo', 'Volumen[ARS]', 'Precio[ARS]', 'Precio[USD]', 'Volumen[USD]', 'USD_MEP', 'Cedear[USD]', 'Acción[USD]','ratio[Ced/Acc-1]%','Compañía']
 cedears = pd.DataFrame(columns=cols)
 
 cedears['Símbolo'] = cedears_ARS['Símbolo'].values
@@ -143,4 +143,5 @@ cedears['ratio[Ced/Acc-1]%'] = (100 * (cedears['Cedear[USD]'].values/cedears['Ac
 cedears['Compañía'] = cedears_ARS['name'].values
 cedears = cedears.sort_values(by='USD_MEP')
 
-
+print(bonos)
+print(cedears)
