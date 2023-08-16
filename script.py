@@ -6,6 +6,15 @@ pd.set_option('display.max_columns', None)
 pd.set_option('colheader_justify', 'center')
 import numpy as np
 import yfinance as yf
+import argparse
+
+parser = argparse.ArgumentParser(description='Pasamos la ruta del archivo ratios.json')
+parser.add_argument('-p', '--path', type=str, help='Ruta del archivo')
+args = parser.parse_args()
+if args.path:
+    path = args.path
+else:
+    path = 'C:/Users/Teleco/OneDrive/Proyectos/Arbitraje-Bonos-Cedeares-MEP/ratios.json'
 
 def eliminar_caracteres(cadena):
     caracteres_a_eliminar = ['\n', '\r', ' ', '%', '.']
@@ -136,7 +145,7 @@ modificar = list(filter(lambda clave: filt[clave] != 0, filt.keys()))
 new_ARS = list(filter(lambda valor: valor != 0, filt.values()))
 cedears['Símbolo'] = cedears['Símbolo'].replace(modificar, new_ARS)
 
-ratio = pd.read_json('C:/Users/Teleco/OneDrive/Proyectos/Arbitraje-Bonos-Cedeares-MEP/ratios.json', orient='index').sort_index(); ratio.columns = ['ratio']
+ratio = pd.read_json(path, orient='index').sort_index(); ratio.columns = ['ratio']
 cedears['Cedear[USD]'] = (ratio['ratio'].values * cedears['Precio[USD]'].values).round(2)
 cedears['Acción[USD]'] = get_stock_price(cedears['Símbolo'].values).round(2) # Obtiene los valores de las
 cedears['ratio[Ced/Acc-1]%'] = (100 * (cedears['Cedear[USD]'].values/cedears['Acción[USD]'].values - 1)).round(1)
